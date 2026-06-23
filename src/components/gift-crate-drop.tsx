@@ -16,6 +16,7 @@ type GiftCrateDropProps = {
   placement: "overlay" | "landed";
   landingTarget?: GiftCrateLandingTarget | null;
   fallDurationMs?: number;
+  onOpen?: () => void;
 };
 
 const CRACK_FRAMES = [
@@ -62,7 +63,7 @@ function freezeCard(el: HTMLElement, transform: string) {
   el.style.cssText = `animation: none; transform: ${transform}; opacity: 1;`;
 }
 
-export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs }: GiftCrateDropProps) {
+export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs, onOpen }: GiftCrateDropProps) {
   const [tapCount, setTapCount]     = useState(0);
 
   const scrapbookRef     = useRef<HTMLDivElement>(null);
@@ -202,6 +203,10 @@ export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs 
     if (placement !== "landed") return;
     if (tapCount >= MAX_TAPS) return;
 
+    if (tapCount + 1 === MAX_TAPS) {
+      onOpen?.();
+    }
+
     setTapCount((prev) => prev + 1);
 
     if (imageContainerRef.current) {
@@ -230,7 +235,7 @@ export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs 
     } catch (_) {
       // ignore
     }
-  }, [placement, tapCount]);
+  }, [placement, tapCount, onOpen]);
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   if (phase === "idle") return null;

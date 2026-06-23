@@ -387,6 +387,7 @@ export function BirthdayWishApp() {
   const whooshAudioRef = useRef<HTMLAudioElement | null>(null);
   const impactAudioRef = useRef<HTMLAudioElement | null>(null);
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
+  const loveBgmRef = useRef<HTMLAudioElement | null>(null);
   const manualFallbackStatusRef = useRef<MicStatus>("unsupported");
   const completedRef = useRef(false);
   const sequenceTimerRef = useRef<number | null>(null);
@@ -473,7 +474,15 @@ export function BirthdayWishApp() {
     setGiftRevealActive(false);
     setCratePhase("idle");
     setCrateLandingTarget(null);
-  }, [clearCrateTimers]);
+
+    if (loveBgmRef.current) {
+      loveBgmRef.current.pause();
+      loveBgmRef.current.currentTime = 0;
+    }
+    if (bgMusicRef.current && bgMusicRef.current.paused && entered) {
+      bgMusicRef.current.play().catch(() => undefined);
+    }
+  }, [clearCrateTimers, entered]);
 
   const startCrateSequence = useCallback(() => {
     clearCrateTimers();
@@ -703,12 +712,18 @@ export function BirthdayWishApp() {
     whooshAudioRef.current = new Audio("/sounds/crate-whoosh.wav");
     impactAudioRef.current = new Audio("/sounds/crate-impact.wav");
     bgMusicRef.current = new Audio("/sounds/happy-birthday.mp3");
+    loveBgmRef.current = new Audio("/sounds/love_bgm.mp3");
     whooshAudioRef.current.preload = "auto";
     impactAudioRef.current.preload = "auto";
     if (bgMusicRef.current) {
       bgMusicRef.current.preload = "auto";
       bgMusicRef.current.loop = true;
       bgMusicRef.current.volume = 0.4;
+    }
+    if (loveBgmRef.current) {
+      loveBgmRef.current.preload = "auto";
+      loveBgmRef.current.loop = true;
+      loveBgmRef.current.volume = 0.4;
     }
     whooshAudioRef.current.volume = 0.55;
     impactAudioRef.current.volume = 0.76;
@@ -768,6 +783,16 @@ export function BirthdayWishApp() {
 
     return "Enter celebration";
   }, [entered, extinguished, micStatus]);
+
+  const handleCrateOpen = useCallback(() => {
+    if (bgMusicRef.current) {
+      bgMusicRef.current.pause();
+    }
+    if (loveBgmRef.current) {
+      loveBgmRef.current.currentTime = 0;
+      loveBgmRef.current.play().catch(() => undefined);
+    }
+  }, []);
 
   return (
     <main className={stageClassName}>
@@ -833,6 +858,7 @@ export function BirthdayWishApp() {
           placement="overlay"
           landingTarget={crateLandingTarget}
           fallDurationMs={GIFT_CRATE_SEQUENCE.fallDurationMs}
+          onOpen={handleCrateOpen}
         />
       ) : null}
 
@@ -925,7 +951,12 @@ export function BirthdayWishApp() {
         <div ref={giftRevealStageRef} className="gift-reveal-stage" aria-hidden="true">
           <div className="gift-reveal-glow" />
           {cratePhase === "cracked" ? (
-            <GiftCrateDrop phase={cratePhase} placement="landed" fallDurationMs={GIFT_CRATE_SEQUENCE.fallDurationMs} />
+            <GiftCrateDrop 
+              phase={cratePhase} 
+              placement="landed" 
+              fallDurationMs={GIFT_CRATE_SEQUENCE.fallDurationMs} 
+              onOpen={handleCrateOpen} 
+            />
           ) : null}
         </div>
       </section>
