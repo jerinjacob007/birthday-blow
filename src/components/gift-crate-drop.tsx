@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import Image from "next/image";
 
 import type { GiftCratePhase } from "@/lib/gift-crate-sequence";
 
@@ -240,7 +241,15 @@ export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs 
         <span /><span /><span /><span />
       </div>
 
-      <img key={`crate-img-${tapAnimKey}`} className={imageClass} src={imageSource} alt="" />
+      <Image
+        key={`crate-img-${tapAnimKey}`}
+        className={imageClass}
+        src={imageSource}
+        alt="Gift Crate"
+        width={724}
+        height={724}
+        priority
+      />
 
       {isCrackedOpen && (
         /**
@@ -261,7 +270,7 @@ export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs 
                 // No autoPlay removed — video autoplays freely; we only pause on unfocus
                 <video src={card.video} autoPlay loop muted playsInline />
               ) : (
-                <img src={card.img} alt="Memory" />
+                <Image src={card.img} alt="Memory" width={200} height={160} />
               )}
               <p>{card.text}</p>
             </div>
