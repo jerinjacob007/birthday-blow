@@ -4,6 +4,7 @@ import confetti from "canvas-confetti";
 import { Gift, Mic, MicOff, RefreshCw, Sparkles, Wind } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { preload } from "react-dom";
 import { GiftCrateDrop, type GiftCrateLandingTarget } from "@/components/gift-crate-drop";
 import { createBlowDetector, type BlowDetector, type BlowStatus } from "@/lib/blow-detector";
 import { getBlowMeterValue } from "@/lib/blow-meter";
@@ -363,6 +364,27 @@ function CakeIllustration({
 }
 
 export function BirthdayWishApp() {
+  const imageUrls = useMemo(() => [
+    "/gift-crate/frame-01-intact.png",
+    "/gift-crate/frame-02-small-cracks.png",
+    "/gift-crate/frame-03-deep-cracks.png",
+    "/gift-crate/frame-04-lid-splitting.png",
+    "/gift-crate/frame-05-breaking-apart.png",
+    "/gift-crate/frame-06-broken-pieces.png",
+    "/gift-crate/gift-crate-break-sheet-transparent.png",
+    "/gift-crate/gift-crate-break-sheet-white.png",
+    "/love/IMG-20260218-WA0056.jpg",
+    "/love/IMG-20260227-WA0412.jpg",
+    "/love/IMG-20260227-WA0503.jpg",
+    "/love/IMG_8556-1.jpg",
+    "/love/IMG_8570.jpg",
+    "/love/Snapchat-1154266423.jpg",
+  ], []);
+
+  imageUrls.forEach((url) => {
+    preload(url, { as: "image" });
+  });
+
   const [entered, setEntered] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [extinguished, setExtinguished] = useState(false);
@@ -533,10 +555,13 @@ export function BirthdayWishApp() {
     setMeter(1);
     void stopListening();
 
+    // Instantly show confetti
+    fireConfetti();
+
+    // Start crate sequence after confetti is underway
     sequenceTimerRef.current = window.setTimeout(() => {
-      fireConfetti();
       startCrateSequence();
-    }, 3500);
+    }, 2500);
   }, [startCrateSequence, stopListening]);
 
   const startCelebration = useCallback(async () => {
