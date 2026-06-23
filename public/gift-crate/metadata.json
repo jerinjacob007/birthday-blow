@@ -1,0 +1,49 @@
+{
+  "frameCount": 6,
+  "frameWidth": 724,
+  "frameHeight": 724,
+  "durationMs": 140,
+  "loop": false,
+  "sheets": {
+    "white": "gift-crate-break-sheet-white.png",
+    "transparent": "gift-crate-break-sheet-transparent.png"
+  },
+  "frames": [
+    {
+      "index": 1,
+      "file": "frame-01-intact.png",
+      "state": "intact closed gift crate",
+      "durationMs": 140
+    },
+    {
+      "index": 2,
+      "file": "frame-02-small-cracks.png",
+      "state": "small visible cracks",
+      "durationMs": 140
+    },
+    {
+      "index": 3,
+      "file": "frame-03-deep-cracks.png",
+      "state": "deeper cracks and loosened ribbon",
+      "durationMs": 140
+    },
+    {
+      "index": 4,
+      "file": "frame-04-lid-splitting.png",
+      "state": "lid splitting open",
+      "durationMs": 140
+    },
+    {
+      "index": 5,
+      "file": "frame-05-breaking-apart.png",
+      "state": "crate breaking apart",
+      "durationMs": 140
+    },
+    {
+      "index": 6,
+      "file": "frame-06-broken-pieces.png",
+      "state": "final broken pieces and debris",
+      "durationMs": 140
+    }
+  ]
+}

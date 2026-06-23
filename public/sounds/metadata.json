@@ -1,0 +1,18 @@
+{
+  "sounds": [
+    {
+      "file": "crate-whoosh.wav",
+      "name": "Air woosh",
+      "mixkitItemId": 1489,
+      "sourceUrl": "https://assets.mixkit.co/active_storage/sfx/1489/1489.wav",
+      "licenseUrl": "https://mixkit.co/license/"
+    },
+    {
+      "file": "crate-impact.wav",
+      "name": "Wood hard hit",
+      "mixkitItemId": 2182,
+      "sourceUrl": "https://assets.mixkit.co/active_storage/sfx/2182/2182.wav",
+      "licenseUrl": "https://mixkit.co/license/"
+    }
+  ]
+}
