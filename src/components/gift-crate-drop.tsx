@@ -26,6 +26,11 @@ const CRACK_FRAMES = [
   "/gift-crate/frame-06-broken-pieces.png",
 ];
 
+const ALL_FRAMES = [
+  "/gift-crate/frame-01-intact.png",
+  ...CRACK_FRAMES,
+];
+
 const SCRAPBOOK_CARDS = [
   { img: "/love/IMG-20260218-WA0056.jpg",      text: "You make every moment special.",  type: "img"   as const },
   { img: "/love/IMG-20260227-WA0412.jpg",      text: "Every moment with you is magic.", type: "img"   as const },
@@ -59,9 +64,9 @@ function freezeCard(el: HTMLElement, transform: string) {
 
 export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs }: GiftCrateDropProps) {
   const [tapCount, setTapCount]     = useState(0);
-  const [tapAnimKey, setTapAnimKey] = useState(0);
 
   const scrapbookRef     = useRef<HTMLDivElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   /** Per-card final transform captured after their CSS pop animation ends. */
   const frozenTransforms = useRef<Record<number, string>>({});
   /** Index of the currently focused card, or null. */
@@ -198,7 +203,21 @@ export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs 
     if (tapCount >= MAX_TAPS) return;
 
     setTapCount((prev) => prev + 1);
-    setTapAnimKey((prev) => prev + 1);
+
+    if (imageContainerRef.current) {
+      // Cancel existing if tapped quickly
+      const animations = imageContainerRef.current.getAnimations();
+      animations.forEach((a) => a.cancel());
+
+      imageContainerRef.current.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(0.96)" },
+          { transform: "scale(1)" }
+        ],
+        { duration: 120, easing: "cubic-bezier(0.4, 0, 0.2, 1)" }
+      );
+    }
 
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       navigator.vibrate([40]);
@@ -230,7 +249,6 @@ export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs 
 
   const crateClass    = ["gift-crate-drop", `gift-crate-drop-${placement}`, `gift-crate-drop-${phase}`].join(" ");
   const imageSource   = phase === "falling" ? "/gift-crate/frame-01-intact.png" : getCrackFrame(tapCount);
-  const imageClass    = `gift-crate-image ${tapAnimKey > 0 ? "gift-crate-tap-anim" : ""}`;
 
   return (
     <div className={crateClass} style={containerStyle} aria-hidden="true" onPointerDown={handleTap}>
@@ -241,15 +259,22 @@ export function GiftCrateDrop({ phase, placement, landingTarget, fallDurationMs 
         <span /><span /><span /><span />
       </div>
 
-      <Image
-        key={`crate-img-${tapAnimKey}`}
-        className={imageClass}
-        src={imageSource}
-        alt="Gift Crate"
-        width={724}
-        height={724}
-        priority
-      />
+      <div ref={imageContainerRef} className="gift-crate-image">
+        {ALL_FRAMES.map((src) => (
+          <Image
+            key={src}
+            src={src}
+            alt="Gift Crate"
+            fill
+            priority
+            style={{
+              objectFit: "contain",
+              opacity: imageSource === src ? 1 : 0,
+              transition: "opacity 0.05s ease-out",
+            }}
+          />
+        ))}
+      </div>
 
       {isCrackedOpen && (
         /**
